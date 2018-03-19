@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+
+    <style>
+
+        body{
+          margin :0;
+          font-family: Arial;
+          background: #171c30;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          max-height: 100vh;
+        }
+        .main-container{
+            width: 320px;
+            height: 640px;
+            border: 1px solid #D3D3D3;
+            background: #EEEEEE;
+            position: relative;
+        }
+        .number-element{
+            position: absolute;
+            font-weight: bold;
+        }
+
+        .floor{
+            border: 2px solid red;
+            position: absolute;
+            top: 550px;
+            width: 100%;
+        }
+        
+
+    </style>
+</head>
+<body>
+
+    <div id="mainContainer" class="main-container"><hr class="floor"></div>
+    
+    <script>
+
+        var mainContainer = document.getElementById("mainContainer")
+        var numsInScreen = []
+        var numIstanceInterval
+
+        const INTERVAL_CREATE_NUMBER = 400 // intervalo para creacion de números (ms)
+        const FALL_VELOCITY = 100 // velocidad con la que cae el número (ms)
+        const FALL_DISTANCE = 20 // distancia que recorre el número al caer (px)
+
+        function getRandomNumber() {
+            return Math.floor(Math.random() * 10) // 0 - 10
+        }
+
+        function getRandomNumberBetween(min, max) {
+            return Math.floor(Math.random() * (max - min) + min);
+        }
+
+        function getDistinctRandomNumber() {
+
+            var randomNumber = -1
+            var existRandomNumberInScreen = false
+            do {
+
+                randomNumber = getRandomNumber()
+                existRandomNumberInScreen = (numsInScreen.filter(function(elem){ return elem == randomNumber }).length == 1 ? true : false)
+
+            } while(existRandomNumberInScreen == true)
+
+            return randomNumber
+        }
+
+        function fallDownNumber(numberElement) {
+            setInterval(function (evt) {
+                numberElement.style.top = (parseInt(numberElement.style.top ? numberElement.style.top.replace("px", "") : 0) + FALL_DISTANCE) + "px"
+
+                // eliminar número
+                if (numberElement.style.top.replace("px", "") >= 580){
+                    numberElement.innerText = "X"
+                }
+                if (numberElement.style.top.replace("px", "") >= 600){
+                    numsInScreen.splice(numsInScreen.indexOf(numberElement.dataset.numValue), 1)
+                    numberElement.remove()
+                }
+            }, FALL_VELOCITY)
+        }
+
+        function startGame() {
+            numIstanceInterval = setInterval(function (evt) {
+                var randomNumber = getRandomNumber() //getDistinctRandomNumber()
+
+                var numberElement = document.createElement("span")
+                numberElement.innerText = randomNumber
+                numberElement.classList.add("number-element")
+                numberElement.style.right = getRandomNumberBetween(10, 310) + "px"
+                numberElement.dataset.numValue = randomNumber
+
+                mainContainer.append(numberElement)
+                numsInScreen.push(randomNumber)
+                fallDownNumber(numberElement)
+            }, INTERVAL_CREATE_NUMBER)
+
+            console.log(numIstanceInterval)
+        }
+
+        function endGame() {
+            clearInterval(numIstanceInterval)
+        }
+
+
+        // init()
+
+    </script>
+</body>
+</html>
